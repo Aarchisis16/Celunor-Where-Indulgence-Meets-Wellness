@@ -151,6 +151,35 @@ const trust = [
 
 const inr = (n: number) => `₹ ${n.toLocaleString("en-IN")}`;
 
+function ProductCard({ p, onAdd }: { p: Product; onAdd: (p: Product) => void }) {
+  return (
+    <article className="flex flex-col overflow-hidden rounded-[3px] bg-[oklch(0.965_0.012_80)] shadow-[var(--shadow-soft)]">
+      <img
+        src={p.img}
+        alt={p.name.replace("\n", " ")}
+        className="aspect-[205/155] w-full object-cover"
+        loading="lazy"
+      />
+      <div className="flex flex-1 flex-col px-[18px] pb-[18px] pt-[16px]">
+        <h3 className="whitespace-pre-line font-display text-[18px] leading-[1.28] text-cocoa">
+          {p.name}
+        </h3>
+        <p className="mt-[14px] font-body text-[14px] text-cocoa">{inr(p.price)}</p>
+        <button
+          onClick={() => onAdd(p)}
+          className="mt-auto flex w-full items-center justify-between rounded-full border border-cocoa/25 py-[5px] pl-[20px] pr-[5px] font-body text-[10.5px] tracking-[0.13em] text-cocoa transition-colors hover:border-cocoa"
+          style={{ marginTop: "16px" }}
+        >
+          ADD TO CART
+          <span className="flex h-[28px] w-[28px] items-center justify-center rounded-full border border-cocoa/25">
+            <ShoppingBag className="h-[13px] w-[13px]" strokeWidth={1.2} />
+          </span>
+        </button>
+      </div>
+    </article>
+  );
+}
+
 function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
