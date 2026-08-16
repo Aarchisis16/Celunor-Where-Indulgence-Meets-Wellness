@@ -25,6 +25,11 @@ import nutBar from "@/assets/nut-chocolate.jpg.asset.json";
 import almondBar from "@/assets/almond-bar.jpg.asset.json";
 import riceBar from "@/assets/rice-bar.jpg.asset.json";
 import truffleBox from "@/assets/truffle-box.jpg.asset.json";
+import whiteChocolates from "@/assets/white-chocolates.jpg.asset.json";
+import almonds from "@/assets/almonds.webp.asset.json";
+import cashews from "@/assets/cashews.webp.asset.json";
+import walnuts from "@/assets/walnuts.webp.asset.json";
+import raisins from "@/assets/raisins.webp.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -50,8 +55,8 @@ export const Route = createFileRoute("/")({
 
 const navLinks = [
   { label: "HOME", href: "#top" },
-  { label: "SHOP", href: "#collections" },
-  { label: "COLLECTIONS", href: "#collections" },
+  { label: "CHOCOLATES", href: "#chocolates" },
+  { label: "DRY FRUITS", href: "#dry-fruits" },
   { label: "OUR STORY", href: "#story" },
   { label: "CONTACT", href: "#contact" },
 ];
@@ -63,13 +68,78 @@ const features = [
   { icon: Heart, title: "Made with Love", text: "Crafted to bring joy to\nyour moments." },
 ];
 
-type Product = { id: string; name: string; price: number; img: string };
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  img: string;
+  category: "chocolate" | "dryfruit";
+};
 
 const products: Product[] = [
-  { id: "walnut", name: "Dark Chocolate\nWith Walnuts", price: 450, img: nutBar.url },
-  { id: "almond", name: "Milk Chocolate\nWith Almonds", price: 450, img: almondBar.url },
-  { id: "rice", name: "Crispy Rice\nChocolate Bar", price: 450, img: riceBar.url },
-  { id: "truffle", name: "Chocolate\nTruffle Box", price: 650, img: truffleBox.url },
+  {
+    id: "walnut",
+    name: "Dark Chocolate\nWith Walnuts",
+    price: 450,
+    img: nutBar.url,
+    category: "chocolate",
+  },
+  {
+    id: "almond",
+    name: "Milk Chocolate\nWith Almonds",
+    price: 450,
+    img: almondBar.url,
+    category: "chocolate",
+  },
+  {
+    id: "rice",
+    name: "Crispy Rice\nChocolate Bar",
+    price: 450,
+    img: riceBar.url,
+    category: "chocolate",
+  },
+  {
+    id: "truffle",
+    name: "Chocolate\nTruffle Box",
+    price: 650,
+    img: truffleBox.url,
+    category: "chocolate",
+  },
+  {
+    id: "white-truffles",
+    name: "White & Dark\nTruffle Blossoms",
+    price: 750,
+    img: whiteChocolates.url,
+    category: "chocolate",
+  },
+  {
+    id: "almonds",
+    name: "Premium\nWhole Almonds",
+    price: 520,
+    img: almonds.url,
+    category: "dryfruit",
+  },
+  {
+    id: "cashews",
+    name: "Jumbo\nWhole Cashews",
+    price: 620,
+    img: cashews.url,
+    category: "dryfruit",
+  },
+  {
+    id: "walnuts",
+    name: "California\nWalnut Halves",
+    price: 680,
+    img: walnuts.url,
+    category: "dryfruit",
+  },
+  {
+    id: "raisins",
+    name: "Golden\nSeedless Raisins",
+    price: 340,
+    img: raisins.url,
+    category: "dryfruit",
+  },
 ];
 
 const trust = [
@@ -81,6 +151,36 @@ const trust = [
 
 const inr = (n: number) => `₹ ${n.toLocaleString("en-IN")}`;
 
+function ProductCard({ p, onAdd }: { p: Product; onAdd: (p: Product) => void }) {
+  return (
+    <article className="flex flex-col overflow-hidden rounded-[3px] bg-[oklch(0.965_0.012_80)] shadow-[var(--shadow-soft)]">
+      <img
+        src={p.img}
+        alt={p.name.replace("\n", " ")}
+        className="aspect-[205/155] w-full object-cover"
+        loading="lazy"
+      />
+      <div className="flex flex-1 flex-col px-[18px] pb-[18px] pt-[16px]">
+        <h3 className="whitespace-pre-line font-display text-[18px] leading-[1.28] text-cocoa">
+          {p.name}
+        </h3>
+        <p className="mt-[14px] font-body text-[14px] text-cocoa">{inr(p.price)}</p>
+        <div className="mt-auto pt-[16px]">
+          <button
+            onClick={() => onAdd(p)}
+            className="flex w-full items-center justify-between rounded-full border border-cocoa/25 py-[5px] pl-[20px] pr-[5px] font-body text-[10.5px] tracking-[0.13em] text-cocoa transition-colors hover:border-cocoa"
+          >
+            ADD TO CART
+            <span className="flex h-[28px] w-[28px] items-center justify-center rounded-full border border-cocoa/25">
+              <ShoppingBag className="h-[13px] w-[13px]" strokeWidth={1.2} />
+            </span>
+          </button>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
@@ -88,6 +188,22 @@ function Index() {
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<Record<string, number>>({});
   const [toast, setToast] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState("#top");
+
+  useEffect(() => {
+    const ids = ["#top", "#chocolates", "#dry-fruits", "#story", "#contact"];
+    const onScroll = () => {
+      let current = "#top";
+      for (const id of ids) {
+        const el = document.querySelector(id);
+        if (el && el.getBoundingClientRect().top <= 140) current = id;
+      }
+      setActiveSection(current);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const count = useMemo(() => Object.values(cart).reduce((a, b) => a + b, 0), [cart]);
   const total = useMemo(
@@ -104,6 +220,9 @@ function Index() {
     if (!q) return products;
     return products.filter((p) => p.name.toLowerCase().includes(q));
   }, [query]);
+
+  const chocolates = useMemo(() => visible.filter((p) => p.category === "chocolate"), [visible]);
+  const dryFruits = useMemo(() => visible.filter((p) => p.category === "dryfruit"), [visible]);
 
   const add = (p: Product) => {
     setCart((c) => ({ ...c, [p.id]: (c[p.id] ?? 0) + 1 }));
@@ -150,28 +269,32 @@ function Index() {
             <Menu className="h-6 w-6" strokeWidth={1.2} />
           </button>
 
-          <a href="#top" onClick={() => go("#top")} className="shrink-0">
+          <a href="#top" onClick={() => go("#top")} className="flex shrink-0 items-center">
             <img
               src={logoGold.url}
               alt="Célunor"
-              className="h-[48px] w-auto md:h-[60px] lg:h-[72px]"
+              className="block h-[48px] w-auto object-contain md:h-[60px] lg:h-[72px]"
               loading="eager"
             />
           </a>
 
           <nav className="ml-[70px] hidden items-center gap-[32px] lg:flex xl:gap-[52px]">
-            {navLinks.map((l, i) => (
+            {navLinks.map((l) => (
               <button
                 key={l.label}
                 onClick={() => go(l.href)}
-                className={`font-body text-[13px] tracking-[0.09em] transition-colors hover:text-rosegold ${
-                  i === 0 ? "border-b border-rosegold pb-[6px] text-cream" : "text-cream/85"
+                className={`relative font-body text-[13px] leading-none tracking-[0.09em] transition-colors hover:text-rosegold ${
+                  activeSection === l.href ? "text-cream" : "text-cream/85"
                 }`}
               >
                 {l.label}
+                {activeSection === l.href && (
+                  <span className="absolute -bottom-[7px] left-0 h-px w-full bg-rosegold" />
+                )}
               </button>
             ))}
           </nav>
+
 
           <div className="ml-auto flex items-center gap-[20px] text-cream/85 md:gap-[28px] lg:gap-[38px]">
             <button
@@ -414,68 +537,81 @@ function Index() {
         </div>
       </div>
 
-      {/* Collections */}
-      <section id="collections" className="scroll-mt-[90px] pb-[42px] pt-[40px]">
-        <div className="mx-auto grid w-[90%] max-w-[1200px] grid-cols-1 gap-[32px] md:w-[86%] lg:grid-cols-[248px_1fr] lg:gap-[38px]">
+      {/* Chocolate collection */}
+      <section id="collections" className="scroll-mt-[90px] pt-[40px]">
+        <div id="chocolates" className="scroll-mt-[90px]">
+          <div className="mx-auto grid w-[90%] max-w-[1200px] grid-cols-1 gap-[32px] md:w-[86%] lg:grid-cols-[248px_1fr] lg:gap-[38px]">
+            <div className="lg:pt-[26px]">
+              <p className="flex items-center gap-[8px] font-body text-[11.5px] tracking-[0.13em] text-rosegold">
+                <span className="text-[13px]">✦</span> THE CHOCOLATE COLLECTION
+              </p>
+              <h2 className="mt-[14px] font-display text-[28px] leading-[1.22] text-cocoa lg:text-[32px]">
+                Indulge in our finest creations
+              </h2>
+              <p className="mt-[16px] max-w-[420px] font-body text-[13.5px] leading-[1.65] text-cocoa/75 lg:max-w-[228px]">
+                From rich and smooth chocolate bars to delightful truffles, find your perfect
+                indulgence.
+              </p>
+              <button
+                onClick={() => setQuery("")}
+                className="mt-[24px] inline-flex items-center gap-[14px] rounded-full bg-espresso px-[26px] py-[14px] font-body text-[11.5px] tracking-[0.12em] text-cream transition-colors hover:bg-cocoa"
+              >
+                VIEW ALL PRODUCTS <ArrowRight className="h-[15px] w-[15px]" strokeWidth={1.3} />
+              </button>
+            </div>
+
+            <div className="relative">
+              {chocolates.length === 0 ? (
+                <p className="font-body text-[13.5px] text-cocoa/70">
+                  No chocolates match “{query}”.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-[19px]">
+                  {chocolates.map((p) => (
+                    <ProductCard key={p.id} p={p} onAdd={add} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Dry fruit collection */}
+      <section id="dry-fruits" className="scroll-mt-[90px] pb-[42px] pt-[46px]">
+        <div className="mx-auto w-[90%] max-w-[1200px] md:w-[86%]">
+          <div className="h-px w-full bg-[oklch(0.88_0.022_76)]" />
+        </div>
+        <div className="mx-auto mt-[40px] grid w-[90%] max-w-[1200px] grid-cols-1 gap-[32px] md:w-[86%] lg:grid-cols-[248px_1fr] lg:gap-[38px]">
           <div className="lg:pt-[26px]">
             <p className="flex items-center gap-[8px] font-body text-[11.5px] tracking-[0.13em] text-rosegold">
-              <span className="text-[13px]">✦</span> SHOP OUR COLLECTIONS
+              <span className="text-[13px]">✦</span> PREMIUM DRY FRUITS
             </p>
             <h2 className="mt-[14px] font-display text-[28px] leading-[1.22] text-cocoa lg:text-[32px]">
-              Indulge in our finest creations
+              Hand-sorted nuts &amp; dried fruit
             </h2>
             <p className="mt-[16px] max-w-[420px] font-body text-[13.5px] leading-[1.65] text-cocoa/75 lg:max-w-[228px]">
-              From rich and smooth chocolate bars to delightful truffles, find your perfect
-              indulgence.
+              Sourced in small lots, sun-dried and packed fresh — perfect on their own or in a
+              gifting hamper.
             </p>
-            <button
-              onClick={() => setQuery("")}
-              className="mt-[24px] inline-flex items-center gap-[14px] rounded-full bg-espresso px-[26px] py-[14px] font-body text-[11.5px] tracking-[0.12em] text-cream transition-colors hover:bg-cocoa"
-            >
-              VIEW ALL PRODUCTS <ArrowRight className="h-[15px] w-[15px]" strokeWidth={1.3} />
-            </button>
           </div>
 
           <div className="relative">
-            {visible.length === 0 ? (
+            {dryFruits.length === 0 ? (
               <p className="font-body text-[13.5px] text-cocoa/70">
-                No chocolates match “{query}”.
+                No dry fruits match “{query}”.
               </p>
             ) : (
-              <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-4 lg:gap-[19px]">
-                {visible.map((p) => (
-                  <article
-                    key={p.id}
-                    className="overflow-hidden rounded-[3px] bg-[oklch(0.965_0.012_80)] shadow-[var(--shadow-soft)]"
-                  >
-                    <img
-                      src={p.img}
-                      alt={p.name.replace("\n", " ")}
-                      className="aspect-[205/155] w-full object-cover"
-                      loading="lazy"
-                    />
-                    <div className="px-[18px] pb-[18px] pt-[16px]">
-                      <h3 className="whitespace-pre-line font-display text-[18px] leading-[1.28] text-cocoa">
-                        {p.name}
-                      </h3>
-                      <p className="mt-[14px] font-body text-[14px] text-cocoa">{inr(p.price)}</p>
-                      <button
-                        onClick={() => add(p)}
-                        className="mt-[16px] flex w-full items-center justify-between rounded-full border border-cocoa/25 py-[5px] pl-[20px] pr-[5px] font-body text-[10.5px] tracking-[0.13em] text-cocoa transition-colors hover:border-cocoa"
-                      >
-                        ADD TO CART
-                        <span className="flex h-[28px] w-[28px] items-center justify-center rounded-full border border-cocoa/25">
-                          <ShoppingBag className="h-[13px] w-[13px]" strokeWidth={1.2} />
-                        </span>
-                      </button>
-                    </div>
-                  </article>
+              <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-[19px]">
+                {dryFruits.map((p) => (
+                  <ProductCard key={p.id} p={p} onAdd={add} />
                 ))}
               </div>
             )}
           </div>
         </div>
       </section>
+
 
       {/* Story */}
       <section id="story" className="scroll-mt-[90px] pb-[48px] pt-[10px]">
