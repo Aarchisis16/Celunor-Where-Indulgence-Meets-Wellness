@@ -487,68 +487,81 @@ function Index() {
         </div>
       </div>
 
-      {/* Collections */}
-      <section id="collections" className="scroll-mt-[90px] pb-[42px] pt-[40px]">
-        <div className="mx-auto grid w-[90%] max-w-[1200px] grid-cols-1 gap-[32px] md:w-[86%] lg:grid-cols-[248px_1fr] lg:gap-[38px]">
+      {/* Chocolate collection */}
+      <section id="collections" className="scroll-mt-[90px] pt-[40px]">
+        <div id="chocolates" className="scroll-mt-[90px]">
+          <div className="mx-auto grid w-[90%] max-w-[1200px] grid-cols-1 gap-[32px] md:w-[86%] lg:grid-cols-[248px_1fr] lg:gap-[38px]">
+            <div className="lg:pt-[26px]">
+              <p className="flex items-center gap-[8px] font-body text-[11.5px] tracking-[0.13em] text-rosegold">
+                <span className="text-[13px]">✦</span> THE CHOCOLATE COLLECTION
+              </p>
+              <h2 className="mt-[14px] font-display text-[28px] leading-[1.22] text-cocoa lg:text-[32px]">
+                Indulge in our finest creations
+              </h2>
+              <p className="mt-[16px] max-w-[420px] font-body text-[13.5px] leading-[1.65] text-cocoa/75 lg:max-w-[228px]">
+                From rich and smooth chocolate bars to delightful truffles, find your perfect
+                indulgence.
+              </p>
+              <button
+                onClick={() => setQuery("")}
+                className="mt-[24px] inline-flex items-center gap-[14px] rounded-full bg-espresso px-[26px] py-[14px] font-body text-[11.5px] tracking-[0.12em] text-cream transition-colors hover:bg-cocoa"
+              >
+                VIEW ALL PRODUCTS <ArrowRight className="h-[15px] w-[15px]" strokeWidth={1.3} />
+              </button>
+            </div>
+
+            <div className="relative">
+              {chocolates.length === 0 ? (
+                <p className="font-body text-[13.5px] text-cocoa/70">
+                  No chocolates match “{query}”.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-[19px]">
+                  {chocolates.map((p) => (
+                    <ProductCard key={p.id} p={p} onAdd={add} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Dry fruit collection */}
+      <section id="dry-fruits" className="scroll-mt-[90px] pb-[42px] pt-[46px]">
+        <div className="mx-auto w-[90%] max-w-[1200px] md:w-[86%]">
+          <div className="h-px w-full bg-[oklch(0.88_0.022_76)]" />
+        </div>
+        <div className="mx-auto mt-[40px] grid w-[90%] max-w-[1200px] grid-cols-1 gap-[32px] md:w-[86%] lg:grid-cols-[248px_1fr] lg:gap-[38px]">
           <div className="lg:pt-[26px]">
             <p className="flex items-center gap-[8px] font-body text-[11.5px] tracking-[0.13em] text-rosegold">
-              <span className="text-[13px]">✦</span> SHOP OUR COLLECTIONS
+              <span className="text-[13px]">✦</span> PREMIUM DRY FRUITS
             </p>
             <h2 className="mt-[14px] font-display text-[28px] leading-[1.22] text-cocoa lg:text-[32px]">
-              Indulge in our finest creations
+              Hand-sorted nuts &amp; dried fruit
             </h2>
             <p className="mt-[16px] max-w-[420px] font-body text-[13.5px] leading-[1.65] text-cocoa/75 lg:max-w-[228px]">
-              From rich and smooth chocolate bars to delightful truffles, find your perfect
-              indulgence.
+              Sourced in small lots, sun-dried and packed fresh — perfect on their own or in a
+              gifting hamper.
             </p>
-            <button
-              onClick={() => setQuery("")}
-              className="mt-[24px] inline-flex items-center gap-[14px] rounded-full bg-espresso px-[26px] py-[14px] font-body text-[11.5px] tracking-[0.12em] text-cream transition-colors hover:bg-cocoa"
-            >
-              VIEW ALL PRODUCTS <ArrowRight className="h-[15px] w-[15px]" strokeWidth={1.3} />
-            </button>
           </div>
 
           <div className="relative">
-            {visible.length === 0 ? (
+            {dryFruits.length === 0 ? (
               <p className="font-body text-[13.5px] text-cocoa/70">
-                No chocolates match “{query}”.
+                No dry fruits match “{query}”.
               </p>
             ) : (
-              <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-4 lg:gap-[19px]">
-                {visible.map((p) => (
-                  <article
-                    key={p.id}
-                    className="overflow-hidden rounded-[3px] bg-[oklch(0.965_0.012_80)] shadow-[var(--shadow-soft)]"
-                  >
-                    <img
-                      src={p.img}
-                      alt={p.name.replace("\n", " ")}
-                      className="aspect-[205/155] w-full object-cover"
-                      loading="lazy"
-                    />
-                    <div className="px-[18px] pb-[18px] pt-[16px]">
-                      <h3 className="whitespace-pre-line font-display text-[18px] leading-[1.28] text-cocoa">
-                        {p.name}
-                      </h3>
-                      <p className="mt-[14px] font-body text-[14px] text-cocoa">{inr(p.price)}</p>
-                      <button
-                        onClick={() => add(p)}
-                        className="mt-[16px] flex w-full items-center justify-between rounded-full border border-cocoa/25 py-[5px] pl-[20px] pr-[5px] font-body text-[10.5px] tracking-[0.13em] text-cocoa transition-colors hover:border-cocoa"
-                      >
-                        ADD TO CART
-                        <span className="flex h-[28px] w-[28px] items-center justify-center rounded-full border border-cocoa/25">
-                          <ShoppingBag className="h-[13px] w-[13px]" strokeWidth={1.2} />
-                        </span>
-                      </button>
-                    </div>
-                  </article>
+              <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 lg:gap-[19px]">
+                {dryFruits.map((p) => (
+                  <ProductCard key={p.id} p={p} onAdd={add} />
                 ))}
               </div>
             )}
           </div>
         </div>
       </section>
+
 
       {/* Story */}
       <section id="story" className="scroll-mt-[90px] pb-[48px] pt-[10px]">
