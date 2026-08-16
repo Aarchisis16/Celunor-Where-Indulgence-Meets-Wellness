@@ -165,16 +165,17 @@ function ProductCard({ p, onAdd }: { p: Product; onAdd: (p: Product) => void }) 
           {p.name}
         </h3>
         <p className="mt-[14px] font-body text-[14px] text-cocoa">{inr(p.price)}</p>
-        <button
-          onClick={() => onAdd(p)}
-          className="mt-auto flex w-full items-center justify-between rounded-full border border-cocoa/25 py-[5px] pl-[20px] pr-[5px] font-body text-[10.5px] tracking-[0.13em] text-cocoa transition-colors hover:border-cocoa"
-          style={{ marginTop: "16px" }}
-        >
-          ADD TO CART
-          <span className="flex h-[28px] w-[28px] items-center justify-center rounded-full border border-cocoa/25">
-            <ShoppingBag className="h-[13px] w-[13px]" strokeWidth={1.2} />
-          </span>
-        </button>
+        <div className="mt-auto pt-[16px]">
+          <button
+            onClick={() => onAdd(p)}
+            className="flex w-full items-center justify-between rounded-full border border-cocoa/25 py-[5px] pl-[20px] pr-[5px] font-body text-[10.5px] tracking-[0.13em] text-cocoa transition-colors hover:border-cocoa"
+          >
+            ADD TO CART
+            <span className="flex h-[28px] w-[28px] items-center justify-center rounded-full border border-cocoa/25">
+              <ShoppingBag className="h-[13px] w-[13px]" strokeWidth={1.2} />
+            </span>
+          </button>
+        </div>
       </div>
     </article>
   );
