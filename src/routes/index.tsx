@@ -175,6 +175,9 @@ function Index() {
     return products.filter((p) => p.name.toLowerCase().includes(q));
   }, [query]);
 
+  const chocolates = useMemo(() => visible.filter((p) => p.category === "chocolate"), [visible]);
+  const dryFruits = useMemo(() => visible.filter((p) => p.category === "dryfruit"), [visible]);
+
   const add = (p: Product) => {
     setCart((c) => ({ ...c, [p.id]: (c[p.id] ?? 0) + 1 }));
     setToast(`${p.name.replace("\n", " ")} added to cart`);
