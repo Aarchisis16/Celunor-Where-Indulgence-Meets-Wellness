@@ -1,18 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
   ChevronRight,
+  ChevronLeft,
   Heart,
   Leaf,
   Nut,
   HandHeart,
+  Menu,
+  Minus,
+  Plus,
   Search,
   ShoppingBag,
   ShieldCheck,
+  Trash2,
   Truck,
   Package,
   Headphones,
   User,
+  X,
 } from "lucide-react";
 import logoGold from "@/assets/celunor-logo-gold.png.asset.json";
 import hero from "@/assets/hero-chocolate.jpg.asset.json";
@@ -38,12 +45,20 @@ export const Route = createFileRoute("/")({
         content:
           "Crafted for the moments worth savouring. Luxury handcrafted chocolates made with the finest ingredients.",
       },
+      { property: "og:image", content: hero.url },
+      { name: "twitter:image", content: hero.url },
     ],
   }),
   component: Index,
 });
 
-const navLinks = ["HOME", "SHOP", "COLLECTIONS", "OUR STORY", "CONTACT"];
+const navLinks = [
+  { label: "HOME", href: "#top" },
+  { label: "SHOP", href: "#collections" },
+  { label: "COLLECTIONS", href: "#collections" },
+  { label: "OUR STORY", href: "#story" },
+  { label: "CONTACT", href: "#contact" },
+];
 
 const features = [
   { icon: Nut, title: "Finest Ingredients", text: "We use premium quality\ningredients." },
@@ -52,11 +67,13 @@ const features = [
   { icon: Heart, title: "Made with Love", text: "Crafted to bring joy to\nyour moments." },
 ];
 
-const products = [
-  { name: "Dark Chocolate\nWith Walnuts", price: "₹ 450", img: nutBar.url },
-  { name: "Milk Chocolate\nWith Almonds", price: "₹ 450", img: almondBar.url },
-  { name: "Crispy Rice\nChocolate Bar", price: "₹ 450", img: riceBar.url },
-  { name: "Chocolate\nTruffle Box", price: "₹ 650", img: truffleBox.url },
+type Product = { id: string; name: string; price: number; img: string };
+
+const products: Product[] = [
+  { id: "walnut", name: "Dark Chocolate\nWith Walnuts", price: 450, img: nutBar.url },
+  { id: "almond", name: "Milk Chocolate\nWith Almonds", price: 450, img: almondBar.url },
+  { id: "rice", name: "Crispy Rice\nChocolate Bar", price: 450, img: riceBar.url },
+  { id: "truffle", name: "Chocolate\nTruffle Box", price: 650, img: truffleBox.url },
 ];
 
 const trust = [
@@ -66,60 +83,292 @@ const trust = [
   { icon: Headphones, title: "Customer Support", text: "We're here to help" },
 ];
 
+const inr = (n: number) => `₹ ${n.toLocaleString("en-IN")}`;
+
 function Index() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [cart, setCart] = useState<Record<string, number>>({});
+  const [toast, setToast] = useState<string | null>(null);
+
+  const count = useMemo(() => Object.values(cart).reduce((a, b) => a + b, 0), [cart]);
+  const total = useMemo(
+    () =>
+      Object.entries(cart).reduce(
+        (sum, [id, qty]) => sum + qty * (products.find((p) => p.id === id)?.price ?? 0),
+        0,
+      ),
+    [cart],
+  );
+
+  const visible = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return products;
+    return products.filter((p) => p.name.toLowerCase().includes(q));
+  }, [query]);
+
+  const add = (p: Product) => {
+    setCart((c) => ({ ...c, [p.id]: (c[p.id] ?? 0) + 1 }));
+    setToast(`${p.name.replace("\n", " ")} added to cart`);
+  };
+  const setQty = (id: string, qty: number) =>
+    setCart((c) => {
+      const next = { ...c };
+      if (qty <= 0) delete next[id];
+      else next[id] = qty;
+      return next;
+    });
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2200);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  useEffect(() => {
+    const open = menuOpen || cartOpen;
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen, cartOpen]);
+
+  const go = (href: string) => {
+    setMenuOpen(false);
+    const el = document.querySelector(href);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div id="top" className="min-h-screen overflow-x-hidden bg-background scroll-smooth">
       {/* Header */}
-      <header className="bg-espresso">
-        <div className="mx-auto flex h-[104px] w-[93%] max-w-[1320px] items-center">
-          <a href="/" className="shrink-0">
-            <img src={logoGold.url} alt="Célunor" className="h-[72px] w-auto" loading="eager" />
+      <header className="sticky top-0 z-40 bg-espresso">
+        <div className="mx-auto flex h-[72px] w-[92%] max-w-[1320px] items-center md:h-[88px] lg:h-[104px]">
+          <button
+            aria-label="Open menu"
+            onClick={() => setMenuOpen(true)}
+            className="mr-4 text-cream/85 hover:text-rosegold lg:hidden"
+          >
+            <Menu className="h-6 w-6" strokeWidth={1.2} />
+          </button>
+
+          <a href="#top" onClick={() => go("#top")} className="shrink-0">
+            <img
+              src={logoGold.url}
+              alt="Célunor"
+              className="h-[48px] w-auto md:h-[60px] lg:h-[72px]"
+              loading="eager"
+            />
           </a>
 
-          <nav className="ml-[70px] hidden items-center gap-[52px] lg:flex">
+          <nav className="ml-[70px] hidden items-center gap-[32px] lg:flex xl:gap-[52px]">
             {navLinks.map((l, i) => (
-              <a
-                key={l}
-                href="#"
+              <button
+                key={l.label}
+                onClick={() => go(l.href)}
                 className={`font-body text-[13px] tracking-[0.09em] transition-colors hover:text-rosegold ${
-                  i === 0
-                    ? "border-b border-rosegold pb-[6px] text-cream"
-                    : "text-cream/85"
+                  i === 0 ? "border-b border-rosegold pb-[6px] text-cream" : "text-cream/85"
                 }`}
               >
-                {l}
-              </a>
+                {l.label}
+              </button>
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-[38px] text-cream/85">
-            <button aria-label="Search" className="hover:text-rosegold">
-              <Search className="h-[23px] w-[23px]" strokeWidth={1.1} />
+          <div className="ml-auto flex items-center gap-[20px] text-cream/85 md:gap-[28px] lg:gap-[38px]">
+            <button
+              aria-label="Search"
+              onClick={() => {
+                setSearchOpen((s) => !s);
+                go("#collections");
+              }}
+              className="hover:text-rosegold"
+            >
+              <Search className="h-[21px] w-[21px] lg:h-[23px] lg:w-[23px]" strokeWidth={1.1} />
             </button>
-            <button aria-label="Account" className="hover:text-rosegold">
-              <User className="h-[23px] w-[23px]" strokeWidth={1.1} />
+            <button
+              aria-label="Account"
+              onClick={() => setToast("Accounts are coming soon")}
+              className="hidden hover:text-rosegold sm:block"
+            >
+              <User className="h-[21px] w-[21px] lg:h-[23px] lg:w-[23px]" strokeWidth={1.1} />
             </button>
-            <button aria-label="Cart" className="relative hover:text-rosegold">
-              <ShoppingBag className="h-[23px] w-[23px]" strokeWidth={1.1} />
-              <span className="absolute -right-[7px] -top-[7px] flex h-[17px] w-[17px] items-center justify-center rounded-full bg-rosegold font-body text-[10px] text-espresso">
-                2
-              </span>
+            <button
+              aria-label={`Cart, ${count} items`}
+              onClick={() => setCartOpen(true)}
+              className="relative hover:text-rosegold"
+            >
+              <ShoppingBag
+                className="h-[21px] w-[21px] lg:h-[23px] lg:w-[23px]"
+                strokeWidth={1.1}
+              />
+              {count > 0 && (
+                <span className="absolute -right-[7px] -top-[7px] flex h-[17px] w-[17px] items-center justify-center rounded-full bg-rosegold font-body text-[10px] text-espresso">
+                  {count}
+                </span>
+              )}
             </button>
           </div>
         </div>
+
+        {searchOpen && (
+          <div className="border-t border-cream/10 bg-espresso">
+            <div className="mx-auto w-[92%] max-w-[1320px] py-3">
+              <input
+                autoFocus
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search chocolates…"
+                className="w-full rounded-full border border-cream/20 bg-transparent px-5 py-2.5 font-body text-[13px] text-cream placeholder:text-cream/45 focus:border-rosegold focus:outline-none"
+              />
+            </div>
+          </div>
+        )}
       </header>
 
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div
+            className="absolute inset-0 bg-espresso/60"
+            onClick={() => setMenuOpen(false)}
+            aria-hidden
+          />
+          <div className="absolute inset-y-0 left-0 flex w-[78%] max-w-[320px] flex-col bg-espresso px-7 py-6">
+            <div className="flex items-center justify-between">
+              <img src={logoGold.url} alt="Célunor" className="h-[46px] w-auto" />
+              <button
+                aria-label="Close menu"
+                onClick={() => setMenuOpen(false)}
+                className="text-cream/85 hover:text-rosegold"
+              >
+                <X className="h-6 w-6" strokeWidth={1.2} />
+              </button>
+            </div>
+            <nav className="mt-10 flex flex-col gap-6">
+              {navLinks.map((l) => (
+                <button
+                  key={l.label}
+                  onClick={() => go(l.href)}
+                  className="text-left font-body text-[14px] tracking-[0.12em] text-cream/85 hover:text-rosegold"
+                >
+                  {l.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
+
+      {/* Cart drawer */}
+      {cartOpen && (
+        <div className="fixed inset-0 z-50">
+          <div
+            className="absolute inset-0 bg-espresso/60"
+            onClick={() => setCartOpen(false)}
+            aria-hidden
+          />
+          <aside className="absolute inset-y-0 right-0 flex w-full max-w-[400px] flex-col bg-[oklch(0.965_0.012_80)]">
+            <div className="flex items-center justify-between border-b border-cocoa/15 px-6 py-5">
+              <h2 className="font-display text-[24px] text-cocoa">Your Cart</h2>
+              <button
+                aria-label="Close cart"
+                onClick={() => setCartOpen(false)}
+                className="text-cocoa/70 hover:text-cocoa"
+              >
+                <X className="h-5 w-5" strokeWidth={1.2} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-6 py-5">
+              {count === 0 ? (
+                <p className="font-body text-[13.5px] text-cocoa/70">
+                  Your cart is empty. Add something sweet.
+                </p>
+              ) : (
+                <ul className="space-y-5">
+                  {Object.entries(cart).map(([id, qty]) => {
+                    const p = products.find((x) => x.id === id)!;
+                    return (
+                      <li key={id} className="flex gap-4">
+                        <img
+                          src={p.img}
+                          alt={p.name.replace("\n", " ")}
+                          className="h-[68px] w-[68px] shrink-0 rounded-[3px] object-cover"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="font-display text-[16px] leading-snug text-cocoa">
+                            {p.name.replace("\n", " ")}
+                          </p>
+                          <p className="mt-1 font-body text-[13px] text-cocoa/75">
+                            {inr(p.price)}
+                          </p>
+                          <div className="mt-2 flex items-center gap-3">
+                            <button
+                              aria-label="Decrease quantity"
+                              onClick={() => setQty(id, qty - 1)}
+                              className="flex h-[26px] w-[26px] items-center justify-center rounded-full border border-cocoa/25 text-cocoa"
+                            >
+                              <Minus className="h-3 w-3" />
+                            </button>
+                            <span className="font-body text-[13px] text-cocoa">{qty}</span>
+                            <button
+                              aria-label="Increase quantity"
+                              onClick={() => setQty(id, qty + 1)}
+                              className="flex h-[26px] w-[26px] items-center justify-center rounded-full border border-cocoa/25 text-cocoa"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </button>
+                            <button
+                              aria-label="Remove item"
+                              onClick={() => setQty(id, 0)}
+                              className="ml-auto text-cocoa/55 hover:text-cocoa"
+                            >
+                              <Trash2 className="h-4 w-4" strokeWidth={1.2} />
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+
+            <div className="border-t border-cocoa/15 px-6 py-5">
+              <div className="flex items-center justify-between font-body text-[14px] text-cocoa">
+                <span>Subtotal</span>
+                <span>{inr(total)}</span>
+              </div>
+              <button
+                disabled={count === 0}
+                onClick={() => {
+                  setCart({});
+                  setCartOpen(false);
+                  setToast("Order placed — we'll be in touch soon");
+                }}
+                className="mt-4 w-full rounded-full bg-espresso py-[14px] font-body text-[11.5px] tracking-[0.12em] text-cream transition-colors hover:bg-cocoa disabled:opacity-40"
+              >
+                CHECKOUT
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+
       {/* Hero */}
-      <section className="relative h-[516px] overflow-hidden">
+      <section className="relative overflow-hidden">
         <img
           src={hero.url}
           alt="Dark chocolate bar on kraft paper with walnuts and dried flowers"
-          className="absolute inset-y-0 right-0 h-full w-[64%] object-cover object-[60%_center]"
+          className="absolute inset-y-0 right-0 h-full w-full object-cover object-[60%_center] md:w-[64%]"
         />
-        <div className="absolute inset-y-0 left-0 w-[62%] bg-gradient-to-r from-[oklch(0.855_0.045_74)] from-45% to-transparent" />
-        <div className="relative mx-auto h-full w-[93%] max-w-[1320px]">
-          <div className="max-w-[470px] pl-[55px] pt-[46px]">
-            <h1 className="font-display text-[46px] leading-[1.15] tracking-[-0.01em] text-cocoa">
+        <div className="absolute inset-0 bg-gradient-to-b from-[oklch(0.855_0.045_74)] via-[oklch(0.855_0.045_74)]/85 to-transparent md:inset-y-0 md:left-0 md:right-auto md:w-[62%] md:bg-gradient-to-r md:from-45%" />
+        <div className="relative mx-auto w-[92%] max-w-[1320px]">
+          <div className="max-w-[470px] py-[54px] md:py-[60px] md:pl-[40px] lg:pl-[55px] lg:pb-[130px] lg:pt-[46px]">
+            <h1 className="font-display text-[32px] leading-[1.15] tracking-[-0.01em] text-cocoa sm:text-[38px] lg:text-[46px]">
               Crafted for the moments worth savouring.
             </h1>
             <div className="mt-[18px] flex items-center gap-[10px]">
@@ -127,42 +376,42 @@ function Index() {
               <span className="font-display text-[13px] text-rosegold">✦</span>
               <span className="h-px w-[52px] bg-rosegold/55" />
             </div>
-            <p className="mt-[18px] max-w-[250px] font-body text-[14px] leading-[1.6] text-cocoa/85">
-              Luxury handcrafted chocolates made with the finest ingredients and
-              a whole lot of love.
+            <p className="mt-[18px] max-w-[280px] font-body text-[14px] leading-[1.6] text-cocoa/85">
+              Luxury handcrafted chocolates made with the finest ingredients and a whole lot of
+              love.
             </p>
-            <div className="mt-[26px] flex flex-wrap items-center gap-[22px]">
-              <a
-                href="#collections"
-                className="inline-flex items-center gap-[14px] rounded-full bg-espresso px-[26px] py-[15px] font-body text-[11.5px] tracking-[0.12em] text-cream transition-colors hover:bg-cocoa"
+            <div className="mt-[26px] flex flex-wrap items-center gap-[14px] sm:gap-[22px]">
+              <button
+                onClick={() => go("#collections")}
+                className="inline-flex items-center gap-[14px] rounded-full bg-espresso px-[24px] py-[14px] font-body text-[11.5px] tracking-[0.12em] text-cream transition-colors hover:bg-cocoa lg:px-[26px] lg:py-[15px]"
               >
                 SHOP CHOCOLATES <ArrowRight className="h-[15px] w-[15px]" strokeWidth={1.3} />
-              </a>
-              <a
-                href="#story"
-                className="inline-flex items-center rounded-full border border-cocoa/45 px-[28px] py-[15px] font-body text-[11.5px] tracking-[0.12em] text-cocoa transition-colors hover:border-cocoa"
+              </button>
+              <button
+                onClick={() => go("#story")}
+                className="inline-flex items-center rounded-full border border-cocoa/45 px-[26px] py-[14px] font-body text-[11.5px] tracking-[0.12em] text-cocoa transition-colors hover:border-cocoa lg:px-[28px] lg:py-[15px]"
               >
                 OUR STORY
-              </a>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       {/* Feature strip */}
-      <div className="relative z-10 -mt-[87px]">
-        <div className="mx-auto grid w-[86%] max-w-[1200px] grid-cols-2 rounded-[4px] bg-[oklch(0.955_0.016_80)] shadow-[var(--shadow-soft)] md:grid-cols-4">
+      <div className="relative z-10 mt-[34px] lg:-mt-[87px]">
+        <div className="mx-auto grid w-[90%] max-w-[1200px] grid-cols-1 rounded-[4px] bg-[oklch(0.955_0.016_80)] shadow-[var(--shadow-soft)] sm:grid-cols-2 md:w-[86%] md:grid-cols-4">
           {features.map((f, i) => (
             <div
               key={f.title}
-              className={`px-[26px] py-[26px] text-center ${
+              className={`px-[26px] py-[24px] text-center ${
                 i > 0 ? "md:border-l md:border-[oklch(0.88_0.022_76)]" : ""
               }`}
             >
               <f.icon className="mx-auto h-[30px] w-[30px] text-rosegold" strokeWidth={1} />
               <h3 className="mt-[12px] font-display text-[18px] text-rosegold">{f.title}</h3>
-              <p className="mt-[6px] whitespace-pre-line font-body text-[12.5px] leading-[1.5] text-cocoa/75">
-                {f.text}
+              <p className="mt-[6px] font-body text-[12.5px] leading-[1.5] text-cocoa/75 md:whitespace-pre-line">
+                {f.text.replace("\n", " ")}
               </p>
             </div>
           ))}
@@ -170,68 +419,86 @@ function Index() {
       </div>
 
       {/* Collections */}
-      <section id="collections" className="pb-[42px] pt-[40px]">
-        <div className="mx-auto grid w-[86%] max-w-[1200px] grid-cols-1 gap-[38px] lg:grid-cols-[248px_1fr]">
-          <div className="pt-[26px]">
+      <section id="collections" className="scroll-mt-[90px] pb-[42px] pt-[40px]">
+        <div className="mx-auto grid w-[90%] max-w-[1200px] grid-cols-1 gap-[32px] md:w-[86%] lg:grid-cols-[248px_1fr] lg:gap-[38px]">
+          <div className="lg:pt-[26px]">
             <p className="flex items-center gap-[8px] font-body text-[11.5px] tracking-[0.13em] text-rosegold">
               <span className="text-[13px]">✦</span> SHOP OUR COLLECTIONS
             </p>
-            <h2 className="mt-[14px] font-display text-[32px] leading-[1.22] text-cocoa">
+            <h2 className="mt-[14px] font-display text-[28px] leading-[1.22] text-cocoa lg:text-[32px]">
               Indulge in our finest creations
             </h2>
-            <p className="mt-[16px] max-w-[228px] font-body text-[13.5px] leading-[1.65] text-cocoa/75">
-              From rich and smooth chocolate bars to delightful truffles, find
-              your perfect indulgence.
+            <p className="mt-[16px] max-w-[420px] font-body text-[13.5px] leading-[1.65] text-cocoa/75 lg:max-w-[228px]">
+              From rich and smooth chocolate bars to delightful truffles, find your perfect
+              indulgence.
             </p>
-            <a
-              href="#collections"
-              className="mt-[26px] inline-flex items-center gap-[14px] rounded-full bg-espresso px-[26px] py-[14px] font-body text-[11.5px] tracking-[0.12em] text-cream transition-colors hover:bg-cocoa"
+            <button
+              onClick={() => setQuery("")}
+              className="mt-[24px] inline-flex items-center gap-[14px] rounded-full bg-espresso px-[26px] py-[14px] font-body text-[11.5px] tracking-[0.12em] text-cream transition-colors hover:bg-cocoa"
             >
               VIEW ALL PRODUCTS <ArrowRight className="h-[15px] w-[15px]" strokeWidth={1.3} />
-            </a>
+            </button>
           </div>
 
           <div className="relative">
-            <div className="grid grid-cols-2 gap-[19px] lg:grid-cols-4">
-              {products.map((p) => (
-                <article
-                  key={p.name}
-                  className="overflow-hidden rounded-[3px] bg-[oklch(0.965_0.012_80)] shadow-[var(--shadow-soft)]"
-                >
-                  <img
-                    src={p.img}
-                    alt={p.name.replace("\n", " ")}
-                    className="aspect-[205/155] w-full object-cover"
-                    loading="lazy"
-                  />
-                  <div className="px-[18px] pb-[18px] pt-[16px]">
-                    <h3 className="whitespace-pre-line font-display text-[18px] leading-[1.28] text-cocoa">
-                      {p.name}
-                    </h3>
-                    <p className="mt-[14px] font-body text-[14px] text-cocoa">{p.price}</p>
-                    <button className="mt-[16px] flex w-full items-center justify-between rounded-full border border-cocoa/25 py-[5px] pl-[20px] pr-[5px] font-body text-[10.5px] tracking-[0.13em] text-cocoa transition-colors hover:border-cocoa">
-                      ADD TO CART
-                      <span className="flex h-[28px] w-[28px] items-center justify-center rounded-full border border-cocoa/25">
-                        <ShoppingBag className="h-[13px] w-[13px]" strokeWidth={1.2} />
-                      </span>
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
-            <button
-              aria-label="Next products"
-              className="absolute -right-[16px] top-1/2 hidden h-[34px] w-[34px] -translate-y-1/2 items-center justify-center rounded-full bg-espresso text-cream lg:flex"
-            >
-              <ChevronRight className="h-[17px] w-[17px]" strokeWidth={1.4} />
-            </button>
+            {visible.length === 0 ? (
+              <p className="font-body text-[13.5px] text-cocoa/70">
+                No chocolates match “{query}”.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 gap-[16px] sm:grid-cols-2 lg:grid-cols-4 lg:gap-[19px]">
+                {visible.map((p) => (
+                  <article
+                    key={p.id}
+                    className="overflow-hidden rounded-[3px] bg-[oklch(0.965_0.012_80)] shadow-[var(--shadow-soft)]"
+                  >
+                    <img
+                      src={p.img}
+                      alt={p.name.replace("\n", " ")}
+                      className="aspect-[205/155] w-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="px-[18px] pb-[18px] pt-[16px]">
+                      <h3 className="whitespace-pre-line font-display text-[18px] leading-[1.28] text-cocoa">
+                        {p.name}
+                      </h3>
+                      <p className="mt-[14px] font-body text-[14px] text-cocoa">{inr(p.price)}</p>
+                      <button
+                        onClick={() => add(p)}
+                        className="mt-[16px] flex w-full items-center justify-between rounded-full border border-cocoa/25 py-[5px] pl-[20px] pr-[5px] font-body text-[10.5px] tracking-[0.13em] text-cocoa transition-colors hover:border-cocoa"
+                      >
+                        ADD TO CART
+                        <span className="flex h-[28px] w-[28px] items-center justify-center rounded-full border border-cocoa/25">
+                          <ShoppingBag className="h-[13px] w-[13px]" strokeWidth={1.2} />
+                        </span>
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
           </div>
+        </div>
+      </section>
+
+      {/* Story */}
+      <section id="story" className="scroll-mt-[90px] pb-[48px] pt-[10px]">
+        <div className="mx-auto w-[90%] max-w-[820px] text-center md:w-[86%]">
+          <p className="font-body text-[11.5px] tracking-[0.13em] text-rosegold">✦ OUR STORY</p>
+          <h2 className="mt-[14px] font-display text-[28px] leading-[1.22] text-cocoa lg:text-[32px]">
+            Small batches, slow craft, honest ingredients
+          </h2>
+          <p className="mx-auto mt-[16px] max-w-[620px] font-body text-[13.5px] leading-[1.75] text-cocoa/75">
+            Célunor began in a small kitchen with a simple belief — that chocolate should be made
+            slowly, with real ingredients and a lot of patience. Every bar is tempered by hand and
+            finished the same day it is poured.
+          </p>
         </div>
       </section>
 
       {/* Trust bar */}
       <section className="bg-espresso py-[26px]">
-        <div className="mx-auto grid w-[86%] max-w-[1200px] grid-cols-2 gap-[24px] md:grid-cols-4">
+        <div className="mx-auto grid w-[90%] max-w-[1200px] grid-cols-1 gap-[22px] sm:grid-cols-2 md:w-[86%] md:grid-cols-4 md:gap-[24px]">
           {trust.map((t) => (
             <div key={t.title} className="flex items-center gap-[16px]">
               <t.icon className="h-[30px] w-[30px] shrink-0 text-rosegold" strokeWidth={1} />
@@ -243,6 +510,58 @@ function Index() {
           ))}
         </div>
       </section>
+
+      {/* Contact / footer */}
+      <footer id="contact" className="scroll-mt-[90px] bg-cocoa py-[36px]">
+        <div className="mx-auto grid w-[90%] max-w-[1200px] gap-[26px] md:w-[86%] md:grid-cols-3">
+          <div>
+            <img src={logoGold.url} alt="Célunor" className="h-[54px] w-auto" loading="lazy" />
+            <p className="mt-[14px] max-w-[280px] font-body text-[12.5px] leading-[1.7] text-cream/70">
+              Luxury handcrafted chocolates, delivered across India.
+            </p>
+          </div>
+          <div>
+            <p className="font-body text-[11.5px] tracking-[0.13em] text-rosegold">EXPLORE</p>
+            <ul className="mt-[12px] space-y-[8px]">
+              {navLinks.map((l) => (
+                <li key={l.label}>
+                  <button
+                    onClick={() => go(l.href)}
+                    className="font-body text-[12.5px] text-cream/75 hover:text-rosegold"
+                  >
+                    {l.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="font-body text-[11.5px] tracking-[0.13em] text-rosegold">CONTACT</p>
+            <ul className="mt-[12px] space-y-[8px] font-body text-[12.5px] text-cream/75">
+              <li>
+                <a href="mailto:hello@celunor.com" className="hover:text-rosegold">
+                  hello@celunor.com
+                </a>
+              </li>
+              <li>
+                <a href="tel:+919000000000" className="hover:text-rosegold">
+                  +91 90000 00000
+                </a>
+              </li>
+              <li>Mumbai, India</li>
+            </ul>
+          </div>
+        </div>
+        <p className="mx-auto mt-[28px] w-[90%] max-w-[1200px] border-t border-cream/10 pt-[16px] font-body text-[11.5px] text-cream/50 md:w-[86%]">
+          © {new Date().getFullYear()} Célunor. All rights reserved.
+        </p>
+      </footer>
+
+      {toast && (
+        <div className="fixed bottom-5 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-espresso px-5 py-3 font-body text-[12px] text-cream shadow-[var(--shadow-soft)]">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
