@@ -25,6 +25,11 @@ import nutBar from "@/assets/nut-chocolate.jpg.asset.json";
 import almondBar from "@/assets/almond-bar.jpg.asset.json";
 import riceBar from "@/assets/rice-bar.jpg.asset.json";
 import truffleBox from "@/assets/truffle-box.jpg.asset.json";
+import whiteChocolates from "@/assets/white-chocolates.jpg.asset.json";
+import almonds from "@/assets/almonds.webp.asset.json";
+import cashews from "@/assets/cashews.webp.asset.json";
+import walnuts from "@/assets/walnuts.webp.asset.json";
+import raisins from "@/assets/raisins.webp.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
