@@ -188,6 +188,22 @@ function Index() {
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<Record<string, number>>({});
   const [toast, setToast] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState("#top");
+
+  useEffect(() => {
+    const ids = ["#top", "#chocolates", "#dry-fruits", "#story", "#contact"];
+    const onScroll = () => {
+      let current = "#top";
+      for (const id of ids) {
+        const el = document.querySelector(id);
+        if (el && el.getBoundingClientRect().top <= 140) current = id;
+      }
+      setActiveSection(current);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const count = useMemo(() => Object.values(cart).reduce((a, b) => a + b, 0), [cart]);
   const total = useMemo(
