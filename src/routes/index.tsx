@@ -253,28 +253,32 @@ function Index() {
             <Menu className="h-6 w-6" strokeWidth={1.2} />
           </button>
 
-          <a href="#top" onClick={() => go("#top")} className="shrink-0">
+          <a href="#top" onClick={() => go("#top")} className="flex shrink-0 items-center">
             <img
               src={logoGold.url}
               alt="Célunor"
-              className="h-[48px] w-auto md:h-[60px] lg:h-[72px]"
+              className="block h-[48px] w-auto object-contain md:h-[60px] lg:h-[72px]"
               loading="eager"
             />
           </a>
 
           <nav className="ml-[70px] hidden items-center gap-[32px] lg:flex xl:gap-[52px]">
-            {navLinks.map((l, i) => (
+            {navLinks.map((l) => (
               <button
                 key={l.label}
                 onClick={() => go(l.href)}
-                className={`font-body text-[13px] tracking-[0.09em] transition-colors hover:text-rosegold ${
-                  i === 0 ? "border-b border-rosegold pb-[6px] text-cream" : "text-cream/85"
+                className={`relative font-body text-[13px] leading-none tracking-[0.09em] transition-colors hover:text-rosegold ${
+                  activeSection === l.href ? "text-cream" : "text-cream/85"
                 }`}
               >
                 {l.label}
+                {activeSection === l.href && (
+                  <span className="absolute -bottom-[7px] left-0 h-px w-full bg-rosegold" />
+                )}
               </button>
             ))}
           </nav>
+
 
           <div className="ml-auto flex items-center gap-[20px] text-cream/85 md:gap-[28px] lg:gap-[38px]">
             <button
