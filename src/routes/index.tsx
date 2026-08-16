@@ -43,8 +43,6 @@ export const Route = createFileRoute("/")({
         content:
           "Crafted for the moments worth savouring. Luxury handcrafted chocolates made with the finest ingredients.",
       },
-      { property: "og:image", content: hero.url },
-      { name: "twitter:image", content: hero.url },
     ],
   }),
   component: Index,
