@@ -55,8 +55,8 @@ export const Route = createFileRoute("/")({
 
 const navLinks = [
   { label: "HOME", href: "#top" },
-  { label: "SHOP", href: "#collections" },
-  { label: "COLLECTIONS", href: "#collections" },
+  { label: "CHOCOLATES", href: "#chocolates" },
+  { label: "DRY FRUITS", href: "#dry-fruits" },
   { label: "OUR STORY", href: "#story" },
   { label: "CONTACT", href: "#contact" },
 ];
@@ -68,13 +68,78 @@ const features = [
   { icon: Heart, title: "Made with Love", text: "Crafted to bring joy to\nyour moments." },
 ];
 
-type Product = { id: string; name: string; price: number; img: string };
+type Product = {
+  id: string;
+  name: string;
+  price: number;
+  img: string;
+  category: "chocolate" | "dryfruit";
+};
 
 const products: Product[] = [
-  { id: "walnut", name: "Dark Chocolate\nWith Walnuts", price: 450, img: nutBar.url },
-  { id: "almond", name: "Milk Chocolate\nWith Almonds", price: 450, img: almondBar.url },
-  { id: "rice", name: "Crispy Rice\nChocolate Bar", price: 450, img: riceBar.url },
-  { id: "truffle", name: "Chocolate\nTruffle Box", price: 650, img: truffleBox.url },
+  {
+    id: "walnut",
+    name: "Dark Chocolate\nWith Walnuts",
+    price: 450,
+    img: nutBar.url,
+    category: "chocolate",
+  },
+  {
+    id: "almond",
+    name: "Milk Chocolate\nWith Almonds",
+    price: 450,
+    img: almondBar.url,
+    category: "chocolate",
+  },
+  {
+    id: "rice",
+    name: "Crispy Rice\nChocolate Bar",
+    price: 450,
+    img: riceBar.url,
+    category: "chocolate",
+  },
+  {
+    id: "truffle",
+    name: "Chocolate\nTruffle Box",
+    price: 650,
+    img: truffleBox.url,
+    category: "chocolate",
+  },
+  {
+    id: "white-truffles",
+    name: "White & Dark\nTruffle Blossoms",
+    price: 750,
+    img: whiteChocolates.url,
+    category: "chocolate",
+  },
+  {
+    id: "almonds",
+    name: "Premium\nWhole Almonds",
+    price: 520,
+    img: almonds.url,
+    category: "dryfruit",
+  },
+  {
+    id: "cashews",
+    name: "Jumbo\nWhole Cashews",
+    price: 620,
+    img: cashews.url,
+    category: "dryfruit",
+  },
+  {
+    id: "walnuts",
+    name: "California\nWalnut Halves",
+    price: 680,
+    img: walnuts.url,
+    category: "dryfruit",
+  },
+  {
+    id: "raisins",
+    name: "Golden\nSeedless Raisins",
+    price: 340,
+    img: raisins.url,
+    category: "dryfruit",
+  },
 ];
 
 const trust = [
