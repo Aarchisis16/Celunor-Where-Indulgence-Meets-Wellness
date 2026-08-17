@@ -10,33 +10,141 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ChocolatesRouteImport } from './routes/chocolates'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CustomiseRouteImport } from './routes/customise'
+import { Route as DryFruitsRouteImport } from './routes/dry-fruits'
+import { Route as GiftBoxRouteImport } from './routes/gift-box'
+import { Route as ShopRouteImport } from './routes/shop'
+import { Route as StoryRouteImport } from './routes/story'
+import { Route as ProductSlugRouteImport } from './routes/product.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChocolatesRoute = ChocolatesRouteImport.update({
+  id: '/chocolates',
+  path: '/chocolates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CustomiseRoute = CustomiseRouteImport.update({
+  id: '/customise',
+  path: '/customise',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DryFruitsRoute = DryFruitsRouteImport.update({
+  id: '/dry-fruits',
+  path: '/dry-fruits',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GiftBoxRoute = GiftBoxRouteImport.update({
+  id: '/gift-box',
+  path: '/gift-box',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StoryRoute = StoryRouteImport.update({
+  id: '/story',
+  path: '/story',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductSlugRoute = ProductSlugRouteImport.update({
+  id: '/product/$slug',
+  path: '/product/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/chocolates': typeof ChocolatesRoute
+  '/contact': typeof ContactRoute
+  '/customise': typeof CustomiseRoute
+  '/dry-fruits': typeof DryFruitsRoute
+  '/gift-box': typeof GiftBoxRoute
+  '/shop': typeof ShopRoute
+  '/story': typeof StoryRoute
+  '/product/$slug': typeof ProductSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/chocolates': typeof ChocolatesRoute
+  '/contact': typeof ContactRoute
+  '/customise': typeof CustomiseRoute
+  '/dry-fruits': typeof DryFruitsRoute
+  '/gift-box': typeof GiftBoxRoute
+  '/shop': typeof ShopRoute
+  '/story': typeof StoryRoute
+  '/product/$slug': typeof ProductSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/chocolates': typeof ChocolatesRoute
+  '/contact': typeof ContactRoute
+  '/customise': typeof CustomiseRoute
+  '/dry-fruits': typeof DryFruitsRoute
+  '/gift-box': typeof GiftBoxRoute
+  '/shop': typeof ShopRoute
+  '/story': typeof StoryRoute
+  '/product/$slug': typeof ProductSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/chocolates'
+    | '/contact'
+    | '/customise'
+    | '/dry-fruits'
+    | '/gift-box'
+    | '/shop'
+    | '/story'
+    | '/product/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/chocolates'
+    | '/contact'
+    | '/customise'
+    | '/dry-fruits'
+    | '/gift-box'
+    | '/shop'
+    | '/story'
+    | '/product/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/chocolates'
+    | '/contact'
+    | '/customise'
+    | '/dry-fruits'
+    | '/gift-box'
+    | '/shop'
+    | '/story'
+    | '/product/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ChocolatesRoute: typeof ChocolatesRoute
+  ContactRoute: typeof ContactRoute
+  CustomiseRoute: typeof CustomiseRoute
+  DryFruitsRoute: typeof DryFruitsRoute
+  GiftBoxRoute: typeof GiftBoxRoute
+  ShopRoute: typeof ShopRoute
+  StoryRoute: typeof StoryRoute
+  ProductSlugRoute: typeof ProductSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +156,75 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chocolates': {
+      id: '/chocolates'
+      path: '/chocolates'
+      fullPath: '/chocolates'
+      preLoaderRoute: typeof ChocolatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/customise': {
+      id: '/customise'
+      path: '/customise'
+      fullPath: '/customise'
+      preLoaderRoute: typeof CustomiseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dry-fruits': {
+      id: '/dry-fruits'
+      path: '/dry-fruits'
+      fullPath: '/dry-fruits'
+      preLoaderRoute: typeof DryFruitsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gift-box': {
+      id: '/gift-box'
+      path: '/gift-box'
+      fullPath: '/gift-box'
+      preLoaderRoute: typeof GiftBoxRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/story': {
+      id: '/story'
+      path: '/story'
+      fullPath: '/story'
+      preLoaderRoute: typeof StoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/$slug': {
+      id: '/product/$slug'
+      path: '/product/$slug'
+      fullPath: '/product/$slug'
+      preLoaderRoute: typeof ProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ChocolatesRoute: ChocolatesRoute,
+  ContactRoute: ContactRoute,
+  CustomiseRoute: CustomiseRoute,
+  DryFruitsRoute: DryFruitsRoute,
+  GiftBoxRoute: GiftBoxRoute,
+  ShopRoute: ShopRoute,
+  StoryRoute: StoryRoute,
+  ProductSlugRoute: ProductSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
