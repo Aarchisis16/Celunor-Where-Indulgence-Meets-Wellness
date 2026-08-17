@@ -108,7 +108,7 @@ function CheckoutPage() {
         unit_price: i.price,
         quantity: i.qty,
         line_total: i.price * i.qty,
-        config: (i.config ?? {}) as Record<string, unknown>,
+        config: JSON.parse(JSON.stringify(i.config ?? {})),
       })),
     );
 

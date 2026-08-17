@@ -124,3 +124,14 @@
     background: var(--gradient-rosegold);
   }
 }
+
+@utility input-line {
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid oklch(0.26 0.045 45 / 0.25);
+  background: transparent;
+  padding: 0.7rem 1rem;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--color-cocoa);
+}
